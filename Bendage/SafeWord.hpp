@@ -21,7 +21,7 @@ public:
   {
     halp::rgb_texture_input<"Input"> tex;
     halp::lineedit<"Letter", "strawberry"> word;
-    halp__enum("Fetish", Algolagnia, Algolagnia, Apotemno, Dacry, Emeto, Klisma, Myso, Odaxela, Pique, Sopho, Tricho) fetish;
+    struct { halp__enum("Fetish", Algolagnia, Algolagnia, Apotemno, Dacry, Emeto, Klisma, Myso, Odaxela, Pique, Sopho, Tricho) } fetish;
     halp::hslider_i32<"HARDER", halp::range{0, 5, 1}> harder;
   } inputs;
 

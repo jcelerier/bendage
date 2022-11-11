@@ -1,9 +1,9 @@
 #pragma once
 
+#include <boost/container/vector.hpp>
 #include <halp/controls.hpp>
 #include <halp/meta.hpp>
 #include <halp/texture.hpp>
-#include <boost/container/vector.hpp>
 
 namespace Bendage
 {
@@ -12,8 +12,10 @@ class Xlippy
 {
 public:
   halp_meta(name, "Xlippy")
-  halp_meta(category, "Bendage")
+  halp_meta(category, "Visuals/Bendage")
   halp_meta(c_name, "xlippy")
+  halp_meta(author, "Jean-Michaël Celerier")
+  halp_meta(description, "The evil thoughts in the mind of evil clippy, rendered")
   halp_meta(uuid, "12326964-0bd9-4d03-b685-49fe8b7f288c")
   //struct ui;
 

@@ -1,9 +1,9 @@
 #include "score_addon_bendage.hpp"
-#include <Bendage/JiPeg.hpp>
-#include <Bendage/Xlippy.hpp>
-#include <Bendage/SafeWord.hpp>
 
 #include <Avnd/Factories.hpp>
+#include <Bendage/JiPeg.hpp>
+#include <Bendage/SafeWord.hpp>
+#include <Bendage/Xlippy.hpp>
 #include <score/plugins/FactorySetup.hpp>
 #include <score_plugin_engine.hpp>
 
@@ -13,16 +13,12 @@
 score_addon_bendage::score_addon_bendage() = default;
 score_addon_bendage::~score_addon_bendage() = default;
 
-std::vector<std::unique_ptr<score::InterfaceBase>>
-score_addon_bendage::factories(
-    const score::ApplicationContext& ctx,
-    const score::InterfaceKey& key) const
+std::vector<std::unique_ptr<score::InterfaceBase>> score_addon_bendage::factories(
+    const score::ApplicationContext& ctx, const score::InterfaceKey& key) const
 {
-  return Avnd::instantiate_fx<
-      Bendage::JiPeg
-    , Bendage::Xlippy
-    , Bendage::SafeWord
-      >(ctx, key);
+  std::vector<std::unique_ptr<score::InterfaceBase>> fx;
+  Avnd::instantiate_fx<Bendage::JiPeg, Bendage::Xlippy, Bendage::SafeWord>(fx, ctx, key);
+  return fx;
 }
 
 std::vector<score::PluginKey> score_addon_bendage::required() const

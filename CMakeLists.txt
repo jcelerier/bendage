@@ -8,6 +8,10 @@ if(NOT TARGET score_plugin_avnd)
   return()
 endif()
 
+if(EMSCRIPTEN)
+  return()
+endif()
+
 project(score_addon_bendage LANGUAGES CXX)
 
 avnd_score_plugin_init(

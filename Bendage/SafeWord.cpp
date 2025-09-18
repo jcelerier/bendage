@@ -17,7 +17,7 @@ void SafeWord::operator()()
   if (!in_tex.changed)
     return;
 
-  int N = in_tex.width * in_tex.height * 4;
+  int N = in_tex.width * in_tex.height * 3;
 
   outputs.tex.create(in_tex.width, in_tex.height);
   if(inputs.word.value.size() > 0)

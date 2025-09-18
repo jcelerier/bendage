@@ -25,13 +25,13 @@ public:
     halp::toggle<"Letter"> space;
     halp::toggle<"Show tip again"> tips;
     halp::toggle<"Burn"> burn;
-    halp::slider_t<int, "Assistance", halp::range{0, 255, 100}> assist;
-    halp::slider_t<int, "Annoyance", halp::range{0, 255, 100}> annoy;
+    halp::spinbox_i32<"Assistance", halp::range{0, 255, 100}> assist;
+    halp::spinbox_i32<"Annoyance", halp::range{0, 255, 100}> annoy;
   } inputs;
 
   struct outs
   {
-    halp::texture_output<"Output"> tex;
+    halp::rgb_texture_output<"Output"> tex;
   } outputs;
 
   Xlippy();

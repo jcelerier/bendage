@@ -20,24 +20,27 @@ void Xlippy::operator()()
   if (!in_tex.changed)
     return;
 
-  int N = in_tex.width * in_tex.height * 4;
+  int N = in_tex.width * in_tex.height * 3;
   bytes.clear();
-  bytes.reserve(N * 1.25);
-  bytes.push_back(in_tex.bytes[0]);
+  bytes.resize(N * 1.25, boost::container::default_init);
+  int pos = 0;
+
+  bytes[pos++] = in_tex.bytes[0];
   for(int i = 1; i < N - 1; i++)
   {
-    unsigned char b = in_tex.bytes[i] | inputs.annoy;
+    unsigned char b = in_tex.bytes[i];
+    b = inputs.annoy == 0 ? b : b & (inputs.annoy * b);
     switch(b)
     {
       case 0x07:
-        bytes.push_back(inputs.space ? ' ' : 0x07);
+        bytes[pos++] = (inputs.space ? ' ' : 0x07);
         break;
       case 0x0A:
       {
-        bytes.push_back(0x0A);
+        bytes[pos++] = (0x0A);
         if(inputs.tips && in_tex.bytes[i + 1] != 0x0D)
         {
-          bytes.push_back(0x0D);
+          bytes[pos++] = (0x0D);
         }
         break;
       }
@@ -45,18 +48,18 @@ void Xlippy::operator()()
       {
         if(inputs.burn && in_tex.bytes[i - 1] != 0x0A)
         {
-          bytes.push_back(0x0A);
+          bytes[pos++] = (0x0A);
         }
-        bytes.push_back(0x0D);
+        bytes[pos++] = (0x0D);
         break;
       }
       default:
-        bytes.push_back(inputs.assist == 0 ? b : b ^ inputs.assist);
+        bytes[pos++] = (inputs.assist == 0 ? b : b ^ inputs.assist);
         break;
     }
   }
 
-  bytes.push_back(in_tex.bytes[N - 1]);
+  bytes[pos++] = (in_tex.bytes[N - 1]);
 
   outputs.tex.create(in_tex.width, in_tex.height);
   memcpy(out_tex.bytes, bytes.data(), N);

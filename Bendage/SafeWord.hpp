@@ -26,15 +26,15 @@ public:
     struct
     {
       halp__enum(
-          "Fetish", Algolagnia, Algolagnia, Apotemno, Dacry, Emeto, Klisma, Myso,
-          Odaxela, Pique, Sopho, Tricho)
+          "Fetish", Algestic, Algestic, Apothem, Dacryd, Amethyst, Clysmic, Myson, Odax,
+          Piquante, Sophist, Trichome)
     } fetish;
     halp::hslider_i32<"HARDER", halp::range{0, 5, 1}> harder;
   } inputs;
 
   struct outs
   {
-    halp::texture_output<"Output"> tex;
+    halp::rgb_texture_output<"Output"> tex;
   } outputs;
 
   SafeWord();

@@ -1,10 +1,13 @@
 #pragma once
 
+#include "jpeg_decoder.h"
+
 #include <boost/container/vector.hpp>
 #include <halp/controls.hpp>
 #include <halp/meta.hpp>
 #include <halp/texture.hpp>
 
+#include <optional>
 namespace Bendage
 {
 
@@ -27,12 +30,11 @@ public:
   {
     halp::rgb_texture_input<"Input"> tex;
     halp::knob_f32<"Peggage", halp::range{.min = 0., .max = 100., .init = 90.}> quality;
-    halp::knob_f32<"Brnch", halp::range{.min = 0., .max = 100., .init = 90.}> brnch;
   } inputs;
 
   struct outs
   {
-    halp::texture_output<"Output"> tex;
+    halp::rgb_texture_output<"Output"> tex;
   } outputs;
 
   JiPeg();
@@ -42,6 +44,10 @@ public:
 private:
   boost::container::vector<unsigned char> rgb;
   boost::container::vector<unsigned char> bytes;
+
+  std::optional<Jpeg::Decoder> decoder;
+
+  int current_byte = 0;
 };
 
 }

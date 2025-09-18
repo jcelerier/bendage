@@ -1,9 +1,8 @@
 #include "JiPeg.hpp"
 
-#include "jpeg_decoder.h"
 #include "toojpeg.h"
 
-#include <iostream>
+#include <QDebug>
 namespace Bendage
 {
 JiPeg::JiPeg() { }
@@ -12,64 +11,44 @@ void JiPeg::operator()()
 {
   auto& in_tex = inputs.tex.texture;
   auto& out_tex = outputs.tex.texture;
+
   if(in_tex.bytes == nullptr)
     return;
   if(!in_tex.changed)
     return;
+  if(in_tex.width < 16 || in_tex.height < 16)
+    return;
 
-  rgb.clear();
-  rgb.resize(in_tex.width * in_tex.height * 3, boost::container::default_init);
-
-  auto rgb_source = rgb.data();
-  {
-    // RGBA -> RGB for the input
-    int bts = in_tex.width * in_tex.height * 4;
-    for(int rgb_i = 0, rgba_i = 0; rgba_i < bts;)
-    {
-      rgb_source[rgb_i++] = in_tex.bytes[rgba_i++];
-      rgb_source[rgb_i++] = in_tex.bytes[rgba_i++];
-      rgb_source[rgb_i++] = in_tex.bytes[rgba_i++];
-      rgba_i++;
-    }
-  }
+  auto rgb_source = in_tex.bytes;
 
   int texture_bytesize = in_tex.width * in_tex.height * 3;
-  bytes.clear();
-  bytes.reserve(in_tex.width * in_tex.height * 3);
+  bytes.resize(in_tex.width * in_tex.height * 3 + 64, boost::container::default_init);
 
   auto wr = [](void* self, unsigned char c) {
     auto& s = *(JiPeg*)self;
-
-    s.bytes.push_back(c);
+    s.bytes[s.current_byte] = c;
+    s.current_byte++;
   };
 
-  //for(int i = 0; i < 5; i++)
-
-  // To JPEG
-  TooJpeg::writeJpeg(
-      this, wr, rgb_source, in_tex.width, in_tex.height, true, inputs.quality, true);
-
-  // From JPEG
-  Jpeg::Decoder decoder(bytes.data(), texture_bytesize);
-  if(decoder.GetResult() != Jpeg::Decoder::OK)
-    return;
-
-  bytes.clear();
-  rgb_source = decoder.GetImage();
-
-  outputs.tex.create(in_tex.width, in_tex.height);
-
   {
-    // RGB -> RGBA for the output
-    auto res = rgb_source;
-    for(int rgb_i = 0, rgba_i = 0; rgb_i < texture_bytesize;)
-    {
-      out_tex.bytes[rgba_i++] = res[rgb_i++];
-      out_tex.bytes[rgba_i++] = res[rgb_i++];
-      out_tex.bytes[rgba_i++] = res[rgb_i++];
-      out_tex.bytes[rgba_i++] = 255;
-    }
+    current_byte = 0;
+
+    // Encode rgb_source to JPEG, into the bytes array
+    TooJpeg::writeJpeg(
+        this, wr, rgb_source, in_tex.width, in_tex.height, true, 100. - inputs.quality,
+        true);
+    // Decode bytes and replace rgb_source with the new pointer.
+    decoder.reset();
+    decoder.emplace(bytes.data(), texture_bytesize);
+    if(decoder->GetResult() != Jpeg::Decoder::OK)
+      return;
+
+    rgb_source = decoder->GetImage();
   }
+
+  out_tex.width = in_tex.width;
+  out_tex.height = in_tex.height;
+  out_tex.bytes = rgb_source;
 
   in_tex.changed = false;
   out_tex.changed = true;

@@ -18,9 +18,6 @@ avnd_score_plugin_init(
   BASE_TARGET score_addon_bendage
 )
 
-set_target_properties(score_addon_bendage PROPERTIES SCORE_CUSTOM_PCH 1)
-target_compile_options(score_addon_bendage PRIVATE -Ofast -march=native)
-
 avnd_score_plugin_add(
   BASE_TARGET score_addon_bendage
   SOURCES
@@ -57,7 +54,4 @@ avnd_score_plugin_finalize(
   PLUGIN_UUID "04205ca6-5fe6-4f7e-b9ce-c09b32a85baa"
 )
 
-# setup_score_plugin(score_addon_bendage)
-#
-# target_link_libraries(score_addon_bendage PUBLIC score_plugin_engine score_plugin_avnd)
-#
+score_optimize_in_debug_mode(${PROJECT_NAME})

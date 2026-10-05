@@ -47,7 +47,7 @@ private:
 
   std::optional<Jpeg::Decoder> decoder;
 
-  int current_byte = 0;
+  std::size_t current_byte = 0;
 };
 
 }

@@ -1,5 +1,7 @@
 #include "Xlippy.hpp"
 
+#include <cstring>
+
 namespace Bendage
 {
 Xlippy::Xlippy()
@@ -20,9 +22,13 @@ void Xlippy::operator()()
   if (!in_tex.changed)
     return;
 
-  int N = in_tex.width * in_tex.height * 3;
+  const int N = in_tex.width * in_tex.height * 3;
+  if(N <= 0)
+    return;
+
+  // Every byte can expand to two: 0A -> 0A 0D, 0D -> 0A 0D.
   bytes.clear();
-  bytes.resize(N * 1.25, boost::container::default_init);
+  bytes.resize(2 * N, boost::container::default_init);
   int pos = 0;
 
   bytes[pos++] = in_tex.bytes[0];
@@ -62,6 +68,7 @@ void Xlippy::operator()()
   bytes[pos++] = (in_tex.bytes[N - 1]);
 
   outputs.tex.create(in_tex.width, in_tex.height);
+  // The expanded stream is cut back to the image size: the shift is the glitch.
   memcpy(out_tex.bytes, bytes.data(), N);
   in_tex.changed = false;
   out_tex.changed = true;

@@ -51,3 +51,16 @@ avnd_score_plugin_finalize(
 )
 
 score_optimize_in_debug_mode(${PROJECT_NAME})
+
+if(SCORE_TESTING AND COMMAND score_add_test)
+  score_add_test(score_addon_bendage_buffers_test
+    SOURCES
+      tests/BendageBuffersTest.cpp
+      Bendage/JiPeg.cpp
+      Bendage/Xlippy.cpp
+      Bendage/SafeWord.cpp
+  )
+  target_include_directories(score_addon_bendage_buffers_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${SCORE_ROOT_SOURCE_DIR}/3rdparty/avendish/include")
+endif()

@@ -170,6 +170,19 @@ TEST_CASE("JiPeg: every quality on noise", "[bendage][jipeg]")
   }
 }
 
+TEST_CASE("JiPeg: frames that grow encode past the first buffer", "[bendage][jipeg]")
+{
+  auto node = std::make_unique<Bendage::JiPeg>();
+  node->inputs.quality.value = 0.f;
+  for(auto [w, h] : {std::pair{32, 32}, {640, 480}, {64, 48}, {1280, 720}})
+  {
+    auto img = noise(w, h, w + h);
+    feed(*node, img, w, h);
+    (*node)();
+    consume(*node, w, h);
+  }
+}
+
 TEST_CASE("JiPeg: a smooth image survives full quality", "[bendage][jipeg]")
 {
   const int w = 96, h = 64;

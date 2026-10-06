@@ -102,6 +102,23 @@ TEST_CASE("Xlippy: an image of carriage returns with burn doubles the stream", "
   CHECK(out[2] == 0x0D);
 }
 
+// cpu-data-bending sweeps Annoyance with an LFO: b & (annoy * b) maps
+// ordinary pixel values to 0x0A, here 0x0B with an annoyance of 254.
+TEST_CASE("Xlippy: an annoyance that makes line feeds doubles the stream", "[bendage][xlippy]")
+{
+  auto img = filled(64, 64, 0x0B);
+  Bendage::Xlippy node;
+  node.inputs.tips.value = true;
+  node.inputs.annoy.value = 254;
+  node.inputs.assist.value = 80;
+  feed(node, img, 64, 64);
+  node();
+  consume(node, 64, 64);
+  const auto* out = node.outputs.tex.texture.bytes;
+  CHECK(out[1] == 0x0A);
+  CHECK(out[2] == 0x0D);
+}
+
 TEST_CASE("Xlippy: dark noise with every option on", "[bendage][xlippy]")
 {
   for(int annoy : {0, 1, 3, 100, 255})
